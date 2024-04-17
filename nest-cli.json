@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/public/tsconfig.app.json"
       }
+    },
+    "example-inject-service-into-decorator": {
+      "type": "application",
+      "root": "apps/example-inject-service-into-decorator",
+      "entryFile": "main",
+      "sourceRoot": "apps/example-inject-service-into-decorator/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/example-inject-service-into-decorator/tsconfig.app.json"
+      }
     }
   }
 }
