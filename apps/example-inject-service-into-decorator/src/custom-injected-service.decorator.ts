@@ -1,26 +1,23 @@
 import { Module, Inject } from '@nestjs/common';
+import { ModuleMetadata } from '@nestjs/common/interfaces/modules/module-metadata.interface';
 
 import { RouterModule } from '@nestjs/core';
 import { ROUTES } from '@nestjs/core/router/router-module';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { ExampleInjectServiceIntoDecoratorController } from './example-inject-service-into-decorator.controller';
-import { ExampleInjectServiceIntoDecoratorService } from './example-inject-service-into-decorator.service';
-import { ExampleInjectServiceIntoDecoratorModule } from './example-inject-service-into-decorator.module';
-
 // ✔️自定义一个装饰器，支持从配置中读取 APP_URL 作为 AppController 的路由路径
-export function CustomInjectedServiceModuleDecorator(): ClassDecorator {
+export function CustomInjectedServiceModuleDecorator(metadata: ModuleMetadata/*继承 Module 装饰器的参数*/): ClassDecorator {
     return (constructor: any) => {
         // 返回目标类
         Module({
             imports: [
                 ConfigModule.forRoot({
-                    envFilePath: ['.env', '.env.local'],  // ⭐这里指定 env 文件路径，以便验证是否注入的是这个 ConfigService 实例
-                    //   isGlobal: true,  // ⭐无需
+                    envFilePath: ['.env.example-inject-service-into-decorator'],  // ⭐这里指定 env 文件路径，以便验证是否注入的是这个 ConfigService 实例
+                    //   isGlobal: true,  // ⭐无需（也不应设置为全局，否则会影响其他模块的 ConfigService 实例（因为 ConfigService 是单例模式）
                 }),
                 {
-                    imports: [ConfigModule/*必需*/],
+                    imports: [ConfigModule/*⭐必需*/],
                     module: RouterModule,
                     providers: [
                         // ConfigService,  // ⭐无需
@@ -31,7 +28,7 @@ export function CustomInjectedServiceModuleDecorator(): ClassDecorator {
                                 return [
                                     {
                                         path: configService.get('APP_URL'),
-                                        module: ExampleInjectServiceIntoDecoratorModule,
+                                        module: constructor,
                                     },
                                 ];
                             },
@@ -39,10 +36,11 @@ export function CustomInjectedServiceModuleDecorator(): ClassDecorator {
                         },
                     ],
                 },
+                ...metadata.imports,
             ],
             //   exports: [ConfigService],  // ⭐无需
-            controllers: [ExampleInjectServiceIntoDecoratorController],
-            providers: [ExampleInjectServiceIntoDecoratorService],
+            controllers: metadata.controllers,
+            providers: metadata.providers,
         })(constructor);
     };
 }

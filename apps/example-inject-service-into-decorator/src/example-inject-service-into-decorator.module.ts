@@ -8,5 +8,9 @@ import { CustomInjectedServiceModuleDecorator } from './custom-injected-service.
 //   controllers: [ExampleInjectServiceIntoDecoratorController],
 //   providers: [ExampleInjectServiceIntoDecoratorService],
 // })
-@CustomInjectedServiceModuleDecorator()  // 使用这个注入了 service 实例的装饰器
+@CustomInjectedServiceModuleDecorator({
+    imports: [],
+    controllers: [ExampleInjectServiceIntoDecoratorController],
+    providers: [ExampleInjectServiceIntoDecoratorService],
+})  // 使用这个注入了 service 实例的装饰器，代替上面的 @Module 装饰器，同时传入相同的参数，实现了使用者无感注入
 export class ExampleInjectServiceIntoDecoratorModule {}
